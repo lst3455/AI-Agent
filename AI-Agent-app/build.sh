@@ -1,0 +1,1 @@
+docker build -f ./Dockerfile -t linsitian/chatbot-back-app:2.0 .

@@ -1,0 +1,5 @@
+spring:
+  config:
+    name: chatbot
+  profiles:
+    active: cloud
