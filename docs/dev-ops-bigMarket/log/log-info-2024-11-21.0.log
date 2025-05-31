@@ -22,8 +22,8 @@
 24-11-21.11:57:24.691 [main            ] INFO  AbstractConfigManager  -  [DUBBO] Config settings: {dubbo.config.mode=STRICT, dubbo.config.ignore-duplicated-interface=false}, dubbo version: 3.0.9, current host: 172.18.0.9
 24-11-21.11:57:24.695 [main            ] INFO  DubboSpringInitializer -  [DUBBO] Use default module model of target application: Dubbo Module[1.1.1], dubbo version: 3.0.9, current host: 172.18.0.9
 24-11-21.11:57:24.695 [main            ] INFO  DubboSpringInitializer -  [DUBBO] Bind Dubbo Module[1.1.1] to spring container: org.springframework.beans.factory.support.DefaultListableBeanFactory@1e965684, dubbo version: 3.0.9, current host: 172.18.0.9
-24-11-21.11:57:24.963 [main            ] WARN  ReferenceAnnotationBeanPostProcessor - Already exists another bean definition with the same bean name [rebateService], rename dubbo reference bean to [rebateService#2]. It is recommended to modify the name of one of the beans to avoid injection problems. prev: rebateService[org.example.ai.chatbot.domain.rebate.service.RebateService], new: rebateService#2[ReferenceBean:org.example.trigger.api.IRebateService:1.0()]. Please check private org.example.trigger.api.IRebateService org.example.ai.chatbot.infrastructure.gateway.RebateServiceRPC.rebateService
-24-11-21.11:57:24.965 [main            ] INFO  ReferenceAnnotationBeanPostProcessor - Register dubbo reference bean: rebateService#2 = ReferenceBean:org.example.trigger.api.IRebateService:1.0() at private org.example.trigger.api.IRebateService org.example.ai.chatbot.infrastructure.gateway.RebateServiceRPC.rebateService
+24-11-21.11:57:24.963 [main            ] WARN  ReferenceAnnotationBeanPostProcessor - Already exists another bean definition with the same bean name [rebateService], rename dubbo reference bean to [rebateService#2]. It is recommended to modify the name of one of the beans to avoid injection problems. prev: rebateService[org.example.ai.agent.domain.rebate.service.RebateService], new: rebateService#2[ReferenceBean:org.example.trigger.api.IRebateService:1.0()]. Please check private org.example.trigger.api.IRebateService org.example.ai.agent.infrastructure.gateway.RebateServiceRPC.rebateService
+24-11-21.11:57:24.965 [main            ] INFO  ReferenceAnnotationBeanPostProcessor - Register dubbo reference bean: rebateService#2 = ReferenceBean:org.example.trigger.api.IRebateService:1.0() at private org.example.trigger.api.IRebateService org.example.ai.agent.infrastructure.gateway.RebateServiceRPC.rebateService
 24-11-21.11:57:25.210 [main            ] INFO  ReferenceAnnotationBeanPostProcessor - class org.apache.dubbo.config.spring.beans.factory.annotation.ReferenceAnnotationBeanPostProcessor was destroying!
 24-11-21.11:57:25.929 [main            ] INFO  TomcatWebServer        - Tomcat initialized with port(s): 8090 (http)
 24-11-21.11:57:26.138 [main            ] INFO  Http11NioProtocol      - Initializing ProtocolHandler ["http-nio-8090"]
@@ -48,7 +48,7 @@
 24-11-21.11:57:27.762 [main            ] INFO  ClientAuthPluginManager - [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
 24-11-21.11:57:27.762 [main            ] INFO  ClientAuthPluginManager - [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
 24-11-21.11:57:27.763 [main            ] INFO  DefaultApplicationDeployer -  [DUBBO] Dubbo Application[1.1](chatgpt-data) has been initialized!, dubbo version: 3.0.9, current host: 172.18.0.9
-24-11-21.11:57:28.348 [main            ] WARN  ReferenceAnnotationBeanPostProcessor - Already exists another bean definition with the same bean name [rebateService], rename dubbo reference bean to [rebateService#3]. It is recommended to modify the name of one of the beans to avoid injection problems. prev: rebateService[org.example.ai.chatbot.domain.rebate.service.RebateService], new: rebateService#3[ReferenceBean:org.example.trigger.api.IRebateService:1.0()]. Please check private org.example.trigger.api.IRebateService org.example.ai.chatbot.infrastructure.gateway.RebateServiceRPC.rebateService
+24-11-21.11:57:28.348 [main            ] WARN  ReferenceAnnotationBeanPostProcessor - Already exists another bean definition with the same bean name [rebateService], rename dubbo reference bean to [rebateService#3]. It is recommended to modify the name of one of the beans to avoid injection problems. prev: rebateService[org.example.ai.agent.domain.rebate.service.RebateService], new: rebateService#3[ReferenceBean:org.example.trigger.api.IRebateService:1.0()]. Please check private org.example.trigger.api.IRebateService org.example.ai.agent.infrastructure.gateway.RebateServiceRPC.rebateService
 24-11-21.11:57:28.428 [main            ] INFO  ReferenceCreator       - The configBean[type:ReferenceConfig] has been built.
 24-11-21.11:57:29.415 [main            ] INFO  Http11NioProtocol      - Starting ProtocolHandler ["http-nio-8090"]
 24-11-21.11:57:29.438 [main            ] INFO  TomcatWebServer        - Tomcat started on port(s): 8090 (http) with context path ''
@@ -132,7 +132,7 @@ org.apache.dubbo.rpc.RpcException: Fail to create remoting client for service(du
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -208,7 +208,7 @@ java.lang.IllegalStateException: urls to invokers error .invokerUrls.size :1, in
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -289,7 +289,7 @@ org.apache.dubbo.rpc.RpcException: Fail to create remoting client for service(du
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -373,7 +373,7 @@ org.apache.dubbo.rpc.RpcException: Fail to create remoting client for service(du
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -457,7 +457,7 @@ org.apache.dubbo.rpc.RpcException: Fail to create remoting client for service(du
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -516,7 +516,7 @@ java.lang.IllegalStateException: Failed to check the status of the service org.e
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -566,7 +566,7 @@ java.lang.IllegalStateException: Failed to check the status of the service org.e
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -608,7 +608,7 @@ java.lang.IllegalStateException: Failed to check the status of the service org.e
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -682,8 +682,8 @@ java.lang.IllegalStateException: Failed to check the status of the service org.e
 24-11-21.11:57:52.661 [main            ] INFO  AbstractConfigManager  -  [DUBBO] Config settings: {dubbo.config.mode=STRICT, dubbo.config.ignore-duplicated-interface=false}, dubbo version: 3.0.9, current host: 172.18.0.9
 24-11-21.11:57:52.666 [main            ] INFO  DubboSpringInitializer -  [DUBBO] Use default module model of target application: Dubbo Module[1.1.1], dubbo version: 3.0.9, current host: 172.18.0.9
 24-11-21.11:57:52.666 [main            ] INFO  DubboSpringInitializer -  [DUBBO] Bind Dubbo Module[1.1.1] to spring container: org.springframework.beans.factory.support.DefaultListableBeanFactory@1e965684, dubbo version: 3.0.9, current host: 172.18.0.9
-24-11-21.11:57:52.925 [main            ] WARN  ReferenceAnnotationBeanPostProcessor - Already exists another bean definition with the same bean name [rebateService], rename dubbo reference bean to [rebateService#2]. It is recommended to modify the name of one of the beans to avoid injection problems. prev: rebateService[org.example.ai.chatbot.domain.rebate.service.RebateService], new: rebateService#2[ReferenceBean:org.example.trigger.api.IRebateService:1.0()]. Please check private org.example.trigger.api.IRebateService org.example.ai.chatbot.infrastructure.gateway.RebateServiceRPC.rebateService
-24-11-21.11:57:52.927 [main            ] INFO  ReferenceAnnotationBeanPostProcessor - Register dubbo reference bean: rebateService#2 = ReferenceBean:org.example.trigger.api.IRebateService:1.0() at private org.example.trigger.api.IRebateService org.example.ai.chatbot.infrastructure.gateway.RebateServiceRPC.rebateService
+24-11-21.11:57:52.925 [main            ] WARN  ReferenceAnnotationBeanPostProcessor - Already exists another bean definition with the same bean name [rebateService], rename dubbo reference bean to [rebateService#2]. It is recommended to modify the name of one of the beans to avoid injection problems. prev: rebateService[org.example.ai.agent.domain.rebate.service.RebateService], new: rebateService#2[ReferenceBean:org.example.trigger.api.IRebateService:1.0()]. Please check private org.example.trigger.api.IRebateService org.example.ai.agent.infrastructure.gateway.RebateServiceRPC.rebateService
+24-11-21.11:57:52.927 [main            ] INFO  ReferenceAnnotationBeanPostProcessor - Register dubbo reference bean: rebateService#2 = ReferenceBean:org.example.trigger.api.IRebateService:1.0() at private org.example.trigger.api.IRebateService org.example.ai.agent.infrastructure.gateway.RebateServiceRPC.rebateService
 24-11-21.11:57:53.225 [main            ] INFO  ReferenceAnnotationBeanPostProcessor - class org.apache.dubbo.config.spring.beans.factory.annotation.ReferenceAnnotationBeanPostProcessor was destroying!
 24-11-21.11:57:53.861 [main            ] INFO  TomcatWebServer        - Tomcat initialized with port(s): 8090 (http)
 24-11-21.11:57:54.014 [main            ] INFO  Http11NioProtocol      - Initializing ProtocolHandler ["http-nio-8090"]
@@ -708,7 +708,7 @@ java.lang.IllegalStateException: Failed to check the status of the service org.e
 24-11-21.11:57:55.475 [main            ] INFO  ClientAuthPluginManager - [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
 24-11-21.11:57:55.475 [main            ] INFO  ClientAuthPluginManager - [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
 24-11-21.11:57:55.476 [main            ] INFO  DefaultApplicationDeployer -  [DUBBO] Dubbo Application[1.1](chatgpt-data) has been initialized!, dubbo version: 3.0.9, current host: 172.18.0.9
-24-11-21.11:57:56.145 [main            ] WARN  ReferenceAnnotationBeanPostProcessor - Already exists another bean definition with the same bean name [rebateService], rename dubbo reference bean to [rebateService#3]. It is recommended to modify the name of one of the beans to avoid injection problems. prev: rebateService[org.example.ai.chatbot.domain.rebate.service.RebateService], new: rebateService#3[ReferenceBean:org.example.trigger.api.IRebateService:1.0()]. Please check private org.example.trigger.api.IRebateService org.example.ai.chatbot.infrastructure.gateway.RebateServiceRPC.rebateService
+24-11-21.11:57:56.145 [main            ] WARN  ReferenceAnnotationBeanPostProcessor - Already exists another bean definition with the same bean name [rebateService], rename dubbo reference bean to [rebateService#3]. It is recommended to modify the name of one of the beans to avoid injection problems. prev: rebateService[org.example.ai.agent.domain.rebate.service.RebateService], new: rebateService#3[ReferenceBean:org.example.trigger.api.IRebateService:1.0()]. Please check private org.example.trigger.api.IRebateService org.example.ai.agent.infrastructure.gateway.RebateServiceRPC.rebateService
 24-11-21.11:57:56.261 [main            ] INFO  ReferenceCreator       - The configBean[type:ReferenceConfig] has been built.
 24-11-21.11:57:57.137 [main            ] INFO  Http11NioProtocol      - Starting ProtocolHandler ["http-nio-8090"]
 24-11-21.11:57:57.158 [main            ] INFO  TomcatWebServer        - Tomcat started on port(s): 8090 (http) with context path ''
@@ -793,7 +793,7 @@ org.apache.dubbo.rpc.RpcException: Fail to create remoting client for service(du
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -869,7 +869,7 @@ java.lang.IllegalStateException: urls to invokers error .invokerUrls.size :1, in
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -948,7 +948,7 @@ org.apache.dubbo.rpc.RpcException: Fail to create remoting client for service(du
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -1032,7 +1032,7 @@ org.apache.dubbo.rpc.RpcException: Fail to create remoting client for service(du
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292)
-	at org.example.ai.chatbot.Application.main(Application.java:21)
+	at org.example.ai.agent.Application.main(Application.java:21)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)

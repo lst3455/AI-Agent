@@ -1,11 +1,11 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : docker-chatbot-MySQL
+ Source Server         : docker-agent-MySQL
  Source Server Type    : MySQL
  Source Server Version : 50744
  Source Host           : localhost:13307
- Source Schema         : chatbot
+ Source Schema         : agent
 
  Target Server Type    : MySQL
  Target Server Version : 50744
