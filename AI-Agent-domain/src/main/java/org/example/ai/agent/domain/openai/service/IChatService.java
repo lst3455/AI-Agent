@@ -6,6 +6,6 @@ import reactor.core.publisher.Flux;
 
 public interface IChatService {
 
-    Flux<String> generateStream(ChatProcessAggregate chatProcessAggregate);
+    Flux<String> generateStreamRag(ChatProcessAggregate chatProcessAggregate);
 
 }

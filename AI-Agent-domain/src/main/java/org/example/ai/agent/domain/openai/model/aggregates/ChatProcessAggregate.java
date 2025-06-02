@@ -21,6 +21,8 @@ public class ChatProcessAggregate {
     private String model;
     /** 问题描述 */
     private List<Message> messages;
+    /** optional: ragtag */
+    private String ragTag;
 
     public boolean isWhiteList(String whiteListStr) {
         String[] whiteList = whiteListStr.split(Constants.SPLIT);

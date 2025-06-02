@@ -25,7 +25,7 @@ public abstract class AbstractChatService implements IChatService {
 
 
     @Override
-    public Flux<String> generateStream(ChatProcessAggregate chatProcessAggregate) {
+    public Flux<String> generateStreamRag(ChatProcessAggregate chatProcessAggregate) {
         try {
             // 1. Get user account
             UserAccountEntity userAccountEntity = iOpenAiRepository.queryUserAccount(chatProcessAggregate.getOpenid());

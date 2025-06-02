@@ -65,11 +65,28 @@ public class RagTest {
 
     @Test
     public void chat() {
-        String message = "who is Zhang Jie";
+        String message = "is Lin Sitian Earthlings?";
         String SYSTEM_PROMPT = """
-                You MUST and ONLY can use the information from the GIVEN CONTEXTS section to answer the user's question. If the answer is not found in the GIVEN CONTEXTS, state that you do not have that information.
+                You are an AI assistant. Your primary task is to answer the user's question. Please adhere to the following instructions meticulously:
+
+                1.  **Foundation of the Answer**:
+                    *   Your answer MUST be fundamentally based on the information provided in the "GIVEN CONTEXTS" section.
+                    *   The core statements and facts in your response must be directly derivable and verifiable from these GIVEN CONTEXTS.
+
+                2.  **Conditional Enrichment with External Knowledge**:
+                    *   After you have formulated the answer based strictly on the GIVEN CONTEXTS, you have the option to enrich this answer.
+                    *   Enrichment MAY involve adding relevant external information or supplementary details from your general knowledge.
+                    *   This enrichment is PERMITTED ONLY IF:
+                        a. It directly pertains to and elaborates on the information already established from the GIVEN CONTEXTS.
+                        b. It does NOT contradict, undermine, or alter the information found in the GIVEN CONTEXTS.
+                        c. You clearly distinguish between information sourced from GIVEN CONTEXTS and the external enrichment. For example, you can state "Based on the provided documents..." for context-derived information, and "Additionally, from broader knowledge..." for external information.
+
+                3.  **Handling Missing Information**:
+                    *   If the GIVEN CONTEXTS do not contain sufficient information to answer the user's question, you MUST explicitly state: "The provided documents do not contain the information required to answer this question."
+                    *   In such cases, do NOT attempt to answer using external knowledge as a substitute for missing information in the GIVEN CONTEXTS.
+
                 GIVEN CONTEXTS:
-                    {documents}
+                {documents}
                 """;
 
         SearchRequest request = SearchRequest.builder()

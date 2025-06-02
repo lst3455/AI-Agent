@@ -1,54 +1,95 @@
 # 命令执行 docker-compose -f docker-compose-environment.yml up -d
 version: '3.9'
 services:
-  mysql:
-    image: mysql:5.7
-    container_name: chatbot_mysql
-    command: --default-authentication-plugin=mysql_native_password --log-bin=mysql-bin --server-id=1 --binlog-format=row --expire_logs_days=7
+
+#  mysql:
+#    image: mysql:5.7
+#    container_name: chatbot_mysql
+#    command: --default-authentication-plugin=mysql_native_password --log-bin=mysql-bin --server-id=1 --binlog-format=row --expire_logs_days=7
+#    restart: always
+#    environment:
+#      TZ: Asia/Singapore
+#      MYSQL_ROOT_PASSWORD: 123456
+#    networks:
+#      - chatbot-network
+#    depends_on:
+#      - mysql-job-dbdata
+#    ports:
+#      - "13306:3306"  # Change external port to avoid conflicts
+#    volumes:
+#      - ./mysql/my.cnf:/etc/mysql/conf.d/mysql.cnf
+#      - ./mysql/sql:/docker-entrypoint-initdb.d
+#    healthcheck:
+#      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+#      interval: 5s
+#      timeout: 10s
+#      retries: 10
+#      start_period: 15s
+#    volumes_from:
+#      - mysql-job-dbdata
+#
+#  mysql-job-dbdata:
+#    image: alpine:3.18.2
+#    container_name: chatbot_mysql-job-dbdata
+#    volumes:
+#      - /var/lib/mysql
+#
+#  phpmyadmin:
+#    image: phpmyadmin:5.2.1
+#    container_name: chatbot_phpmyadmin
+#    hostname: chatbot_phpmyadmin
+#    ports:
+#      - 8899:80  # Change external port to avoid conflicts
+#    environment:
+#      - PMA_HOST=mysql
+#      - PMA_PORT=3306
+#      - MYSQL_ROOT_PASSWORD=123456
+#    depends_on:
+#      mysql:
+#        condition: service_healthy
+#    networks:
+#      - chatbot-network
+
+  vector_db:
+    image: registry.cn-hangzhou.aliyuncs.com/xfg-studio/pgvector:v0.5.0
+    container_name: vector_db
     restart: always
     environment:
-      TZ: Asia/Singapore
-      MYSQL_ROOT_PASSWORD: 123456
-    networks:
-      - chatbot-network
-    depends_on:
-      - mysql-job-dbdata
-    ports:
-      - "13306:3306"  # Change external port to avoid conflicts
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=13860433455wabb!
+      - POSTGRES_DB=ai-rag-context
+      - PGPASSWORD=postgres
     volumes:
-      - ./mysql/my.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ./mysql/sql:/docker-entrypoint-initdb.d
+      - ./pgvector/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '15432:5432'
     healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      interval: 5s
-      timeout: 10s
+      test: "pg_isready -U postgres -d ai-rag-context"
+      interval: 2s
+      timeout: 20s
       retries: 10
-      start_period: 15s
-    volumes_from:
-      - mysql-job-dbdata
-
-  mysql-job-dbdata:
-    image: alpine:3.18.2
-    container_name: chatbot_mysql-job-dbdata
-    volumes:
-      - /var/lib/mysql
-
-  phpmyadmin:
-    image: phpmyadmin:5.2.1
-    container_name: chatbot_phpmyadmin
-    hostname: chatbot_phpmyadmin
-    ports:
-      - 8899:80  # Change external port to avoid conflicts
-    environment:
-      - PMA_HOST=mysql
-      - PMA_PORT=3306
-      - MYSQL_ROOT_PASSWORD=123456
-    depends_on:
-      mysql:
-        condition: service_healthy
     networks:
-      - chatbot-network
+      - my-network
+
+  # pg 管理工具
+  pgadmin:
+    image: registry.cn-hangzhou.aliyuncs.com/xfg-studio/pgadmin4:9.1.0
+    container_name: vector_db_admin
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@outlook.com
+      PGADMIN_DEFAULT_PASSWORD: 13860433455wabb!
+    depends_on:
+      - vector_db
+    networks:
+      - my-network
 
 networks:
-  chatbot-network:
+  my-network:
     driver: bridge

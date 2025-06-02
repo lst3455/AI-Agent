@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatGPTRequestDTO {
+public class ChatRequestDTO {
 
     /** 默认模型 */
     private String model;
