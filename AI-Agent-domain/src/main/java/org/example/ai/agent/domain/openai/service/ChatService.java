@@ -137,7 +137,7 @@ public class ChatService extends AbstractChatService {
                 .map(Document::getText)   // Use getText() instead of getContent()
                 .collect(Collectors.joining());
 
-        log.info("Retrieved documents for prompt: {}", documentCollectors);
+        log.info("Retrieved contexts for prompt: {}", documentCollectors);
 
         String SYSTEM_PROMPT = """
                 You are a highly specialized AI assistant. Your responses MUST adhere strictly to the following operational directives:
@@ -164,22 +164,22 @@ public class ChatService extends AbstractChatService {
                         a.  The enrichment directly pertains to, clarifies, or elaborates on information ALREADY ESTABLISHED from the GIVEN CONTEXTS.
                         b.  It does NOT contradict, undermine, or alter any information from the GIVEN CONTEXTS.
                         c.  It is NOT used to answer any part of the user's question that could not be answered by the GIVEN CONTEXTS alone.
-                        d.  You MUST clearly demarcate information from GIVEN CONTEXTS versus external enrichment (e.g., "Based on the provided documents..." and "For additional related context from broader knowledge...").
+                        d.  You MUST clearly demarcate information from GIVEN CONTEXTS versus external enrichment (e.g., "Based on the provided contexts..." and "For additional related context from broader knowledge...").
                         e.  Enrichment should be concise and directly supportive, not speculative or overly broad.
 
                 3.  **Handling Insufficient Information in GIVEN CONTEXTS**:
-                    *   If the GIVEN CONTEXTS do not contain the necessary information to answer the user's question (or parts of it), you MUST explicitly state: "The provided documents do not contain the information required to answer this question [or specific part of the question, if applicable]."
+                    *   If the GIVEN CONTEXTS is empty, you MUST inform the user: "No context was selected, so I cannot answer the question based on any context." Do not attempt to answer the question or provide any information beyond this notice.
+                    *   If the GIVEN CONTEXTS do not contain the necessary information to answer the user's question (or parts of it), you MUST explicitly state: "The provided contexts do not contain the information required to answer this question [or specific part of the question, if applicable]."
                     *   Do NOT attempt to answer using external knowledge as a substitute for missing information in the GIVEN CONTEXTS. Do not speculate or offer "best guesses" if the information is not present.
-
+                
                 GIVEN CONTEXTS:
-                {documents}
+                {contexts}
                 """;
         Message ragMessage = new SystemPromptTemplate(SYSTEM_PROMPT)
-                .createMessage(Map.of("documents", documentCollectors));
+                .createMessage(Map.of("contexts", documentCollectors));
 
         messages.add(ragMessage);
         messages.addAll(originalMessages);
-        log.info("rag enhanced message: {}", messages);
 
         return messages;
     }

@@ -50,7 +50,7 @@ public class AiSeriveController {
     @Resource
     private IChatService chatService;
 
-    @RequestMapping(value = "generate_stream_rag", method = RequestMethod.GET)
+    @RequestMapping(value = "generate_stream_rag", method = RequestMethod.POST)
     public Flux<String> generateStreamRag(@RequestBody ChatRagRequestDTO request, @RequestHeader("Authorization") String token, HttpServletResponse response) {
         log.info("trigger rag generate, request:{}", JSON.toJSONString(request));
         try {
