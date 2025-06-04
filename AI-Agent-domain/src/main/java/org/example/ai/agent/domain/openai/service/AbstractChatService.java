@@ -8,6 +8,7 @@ import org.example.ai.agent.domain.openai.model.entity.UserAccountEntity;
 import org.example.ai.agent.domain.openai.model.valobj.LogicCheckTypeVO;
 import org.example.ai.agent.domain.openai.repository.IOpenAiRepository;
 import org.example.ai.agent.domain.openai.service.rule.factory.DefaultLogicFactory;
+import org.example.ai.agent.domain.rebate.service.IRebateService;
 import org.example.ai.agent.types.common.Constants;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +21,8 @@ public abstract class AbstractChatService implements IChatService {
     @Resource
     protected IOpenAiRepository iOpenAiRepository;
 
-//    @Resource
-//    private IRebateService rebateService;
+    @Resource
+    private IRebateService rebateService;
 
 
     @Override
@@ -62,13 +63,13 @@ public abstract class AbstractChatService implements IChatService {
                         Constants.ResponseCode.QUOTA_OR_MODEL_TYPE_UNSUPPORTED.getInfo()));
             }
 
-//            // process rebate for each chat session
-//            try {
-//                rebateService.rebateGoods(chatProcessAggregate.getOpenid(), RandomStringUtils.randomNumeric(11));
-//            } catch (Exception e) {
-//                log.error("point rebate fail, openId:{}", chatProcessAggregate.getOpenid(), e);
-//                // Continue execution even if rebate fails
-//            }
+            // process rebate for each chat session
+            try {
+                rebateService.rebateGoods(chatProcessAggregate.getOpenid(), RandomStringUtils.randomNumeric(11));
+            } catch (Exception e) {
+                log.error("point rebate fail, openId:{}", chatProcessAggregate.getOpenid(), e);
+                // Continue execution even if rebate fails
+            }
 
             // 3. Process response and transform to SSE format
             return doMessageResponse(chatProcessAggregate)
