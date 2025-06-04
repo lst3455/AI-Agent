@@ -1,1 +1,1 @@
-docker build -f ./Dockerfile -t linsitian/chatbot-back-app:2.0 .
+docker build -f ./Dockerfile -t linsitian/agent-back-app:2.0 .
