@@ -1,7 +1,7 @@
 version: '3.8'
 # 命令执行 docker-compose -f docker-compose-app.yml up -d
 services:
-  chatbot-app:
+  agent-app:
     image: linsitian/agent-back-app:1.0
     container_name: agent-back-app
     ports:
@@ -15,7 +15,7 @@ services:
       - APP_CONFIG_WHITE_LIST=ojbZUv18lbmriaTjcCWBYkOrSbHA
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=13860433455wabb!
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/agent?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=false
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/chatbot?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=false
     volumes:
       - ./log:/data/log
     networks:
