@@ -10,7 +10,7 @@ At present, AI-Agent's services interface with the [LuckWhirl Platform](https://
 <div align="center"><img src="docs/readme/auth.png" style="zoom: 33%;" /></div>
 <div align="center"><img src="docs/readme/chat2.png" style="zoom: 33%;" /></div>
 
-<div align="center"><img src="docs/readme/agent1.png" style="zoom: 33%;" /></div>
+<div align="center"><img src="docs/readme/agent2.png" style="zoom: 33%;" /></div>
 
 ### Key Features:
 
