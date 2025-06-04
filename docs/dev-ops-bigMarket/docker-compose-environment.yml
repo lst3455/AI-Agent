@@ -55,10 +55,10 @@ services:
     container_name: vector_db
     restart: always
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=13860433455wabb!
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=ai-rag-context
-      - PGPASSWORD=postgres
+      - PGPASSWORD=admin
     volumes:
       - ./pgvector/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
     logging:
@@ -83,8 +83,8 @@ services:
     ports:
       - "5050:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@outlook.com
-      PGADMIN_DEFAULT_PASSWORD: 13860433455wabb!
+      PGADMIN_DEFAULT_EMAIL: admin
+      PGADMIN_DEFAULT_PASSWORD: admin
     depends_on:
       - vector_db
     networks:
