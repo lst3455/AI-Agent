@@ -8,6 +8,7 @@ import org.example.ai.agent.domain.openai.model.aggregates.ChatProcessAggregate;
 import org.example.ai.agent.domain.openai.service.IChatService;
 import org.example.ai.agent.trigger.http.dto.ChatRagRequestDTO;
 import org.example.ai.agent.trigger.http.dto.ChatRequestDTO;
+import org.example.ai.agent.trigger.http.dto.MessageEntity;
 import org.example.ai.agent.types.common.Constants;
 import org.example.ai.agent.types.exception.ChatGPTException;
 import org.springframework.ai.chat.client.ChatClient;
@@ -76,12 +77,22 @@ public class AiSeriveController {
 
             // Step 4: Convert incoming DTO messages to Spring AI Message objects.
             // This maps roles (user, system, assistant) to their respective Spring AI message types.
+            List<MessageEntity> messageEntities = request.getMessages();
+            // Avoid empty messageEntities
+            if (messageEntities.isEmpty()) messageEntities.add(MessageEntity.builder()
+                    .role("user")
+                    .content("Hi")
+                    .build());
+
             List<Message> aiMessages = request.getMessages().stream()
                     .map(msg -> {
                         switch (msg.getRole().toLowerCase()) { // Normalize role to lowercase for robust matching
-                            case "user": return new UserMessage(msg.getContent());
-                            case "system": return new SystemMessage(msg.getContent());
-                            case "assistant": return new AssistantMessage(msg.getContent());
+                            case "user":
+                                return new UserMessage(msg.getContent());
+                            case "system":
+                                return new SystemMessage(msg.getContent());
+                            case "assistant":
+                                return new AssistantMessage(msg.getContent());
                             default:
                                 log.warn("Unknown message role '{}', defaulting to user message.", msg.getRole());
                                 return new UserMessage(msg.getContent()); // Default to UserMessage for unknown roles
@@ -101,7 +112,7 @@ public class AiSeriveController {
             // Step 6: Initiate the streaming chat generation through the chat service.
             // The service will return a Flux<String> emitting parts of the response as they are generated.
             return chatService.generateStreamRag(chatProcessAggregate);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Rag Streaming response, request: {} encountered an exception", request, e);
             throw new ChatGPTException(e.getMessage());
         }

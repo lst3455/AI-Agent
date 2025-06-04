@@ -49,7 +49,6 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-ollama</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>
