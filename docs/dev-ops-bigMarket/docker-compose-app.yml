@@ -14,7 +14,7 @@ services:
       - APP_CONFIG_LIMIT_COUNT=3
       - APP_CONFIG_WHITE_LIST=ojbZUv18lbmriaTjcCWBYkOrSbHA
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=13860433455wabb!
+      - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/chatbot?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=false
     volumes:
       - ./log:/data/log
@@ -26,16 +26,6 @@ services:
         max-size: "10m"
         max-file: "3"
     restart: always
-
-#  # OpenAI 应用前端
-#  chatbot-front-app:
-#    container_name: agent-front-app
-#    image: linsitian/chatbot-front-app:2.0
-#    ports:
-#      - "3000:3000"
-#    networks:
-#      - my-network
-#    restart: always
 
 networks:
   my-network:

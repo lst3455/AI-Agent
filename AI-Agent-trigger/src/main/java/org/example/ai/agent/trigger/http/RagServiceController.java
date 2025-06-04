@@ -76,7 +76,7 @@ public class RagServiceController {
      * @return A Response object indicating the success or failure of the upload operation.
      */
     @RequestMapping(value = "file/upload", method = RequestMethod.POST, headers = "content-type=multipart/form-data")
-    public Response<GeneralEmptyResponseDTO> uploadFile(@RequestHeader("Authorization") String token, @RequestHeader("OpenId") String openId, @RequestParam String ragTag, @RequestParam("file") List<MultipartFile> files) {
+    public Response<GeneralEmptyResponseDTO> uploadFile(@RequestHeader("Authorization") String token, @RequestHeader("OpenId") String openId, @RequestParam("ragTag") String ragTag, @RequestParam("file") List<MultipartFile> files) {
         log.info("context base upload started, openId: {}, RAG tag: {}", openId, ragTag);
         try{
             // 1. Token 校验
