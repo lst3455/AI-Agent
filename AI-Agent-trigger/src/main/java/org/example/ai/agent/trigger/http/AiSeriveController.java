@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  */
 @RestController()
 @CrossOrigin("${app.config.cross-origin}")
-@RequestMapping("/api/${app.config.api-version}/agent/ollama")
+@RequestMapping("/api/${app.config.api-version}/agent/ai")
 @Slf4j
 public class AiSeriveController {
 
@@ -53,7 +53,7 @@ public class AiSeriveController {
 
     @RequestMapping(value = "generate_stream_rag", method = RequestMethod.POST)
     public Flux<String> generateStreamRag(@RequestBody ChatRagRequestDTO request, @RequestHeader("Authorization") String token, HttpServletResponse response) {
-        log.info("trigger rag generate, request:{}", JSON.toJSONString(request));
+        log.info("Trigger rag general generate, request:{}", JSON.toJSONString(request));
         try {
             // Step 1: Configure basic HTTP response properties for streaming.
             // Sets content type to text/event-stream, UTF-8 character encoding, and disables caching.
@@ -84,7 +84,7 @@ public class AiSeriveController {
                     .content("Hi")
                     .build());
 
-            List<Message> aiMessages = request.getMessages().stream()
+            List<Message> aiMessages = messageEntities.stream()
                     .map(msg -> {
                         switch (msg.getRole().toLowerCase()) { // Normalize role to lowercase for robust matching
                             case "user":
@@ -113,7 +113,67 @@ public class AiSeriveController {
             // The service will return a Flux<String> emitting parts of the response as they are generated.
             return chatService.generateStreamRag(chatProcessAggregate);
         } catch (Exception e) {
-            log.error("Rag Streaming response, request: {} encountered an exception", request, e);
+            log.error("Rag general generate fail, request: {} encountered an exception", request, e);
+            throw new ChatGPTException(e.getMessage());
+        }
+    }
+
+    /**
+     * http://localhost:8090/api/v0/agent/ai/generate_title
+     */
+    @RequestMapping(value = "generate_title", method = RequestMethod.POST)
+    public Flux<String> generateTitle(@RequestBody ChatRagRequestDTO request, @RequestHeader("Authorization") String token, HttpServletResponse response) {
+        log.info("Trigger generate title, request:{}", JSON.toJSONString(request));
+
+        try {
+            // 1. Basic configuration: stream output, encoding, disable caching
+            response.setContentType("text/event-stream");
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("Cache-Control", "no-cache");
+
+            // 2. Token verification
+            boolean success = authService.checkToken(token);
+            if (!success) {
+                log.info("Token verification failed");
+                return Flux.just(Constants.ResponseCode.TOKEN_ERROR.getCode());
+            }
+
+            log.info("Token verification succeeded");
+
+            // 3. Get OpenID
+            String openid = authService.openid(token);
+            log.info("Processing streaming title request, openid: {} Request model: {}", openid, request.getModel());
+
+            List<MessageEntity> messageEntities = request.getMessages() != null? request.getMessages() : new ArrayList<>();
+            // Avoid empty messageEntities
+            if (messageEntities.isEmpty()) messageEntities.add(MessageEntity.builder()
+                    .role("user")
+                    .content("Hi")
+                    .build());
+
+            // 4. Convert DTO messages to Spring AI messages
+            List<Message> aiMessages = messageEntities.stream()
+                    .map(msg -> {
+                        switch (msg.getRole()) {
+                            case "user": return new UserMessage(msg.getContent());
+                            case "system": return new SystemMessage(msg.getContent());
+                            case "assistant": return new AssistantMessage(msg.getContent());
+                            default: return new UserMessage(msg.getContent());
+                        }
+                    })
+                    .collect(Collectors.toList());
+
+            // 4. Build parameters
+            ChatProcessAggregate chatProcessAggregate = ChatProcessAggregate.builder()
+                    .openid(openid)
+                    .model(request.getModel())
+                    .messages(aiMessages)
+                    .build();
+
+            // 6. Stream the response - extract just the text content from each ChatResponse
+            return chatService.generateTitle(chatProcessAggregate);
+        } catch (Exception e) {
+            log.error("Generate title fail, request: {} encountered an exception", request, e);
             throw new ChatGPTException(e.getMessage());
         }
     }
