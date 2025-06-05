@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface IRagService {
 
-    public List<String> queryRagTags();
+    public List<String> queryRagTags(String userId);
 
-    public void fileUpload(String ragTag, List<MultipartFile> files);
+    public void fileUpload(String userId, String ragTag, List<MultipartFile> files);
 
-    public void deleteRagContext(String ragTag);
+    public void deleteRagContext(String userId, String ragTag);
 }

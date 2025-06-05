@@ -48,7 +48,7 @@ public class RagServiceController {
             String openid = authService.openid(token);
             assert null != openid;
 
-            List<String> elements = new ArrayList<>(iRagService.queryRagTags());
+            List<String> elements = new ArrayList<>(iRagService.queryRagTags(openId));
 
             log.info("Query rag tag list completed, openId: {}", openId);
             return Response.<QueryRagTagsResponseDTO>builder()
@@ -92,7 +92,7 @@ public class RagServiceController {
             String openid = authService.openid(token);
             assert null != openid;
 
-            iRagService.fileUpload(ragTag,files);
+            iRagService.fileUpload(openId,ragTag,files);
 
             log.info("context base upload completed, openId: {}, RAG tag: {}", openId, ragTag);
             return Response.<GeneralEmptyResponseDTO>builder()
@@ -134,7 +134,7 @@ public class RagServiceController {
             String openid = authService.openid(token);
             assert null != openid;
 
-            iRagService.deleteRagContext(ragTag);
+            iRagService.deleteRagContext(openid,ragTag);
 
             log.info("Context base delete completed, openId: {}, RAG tag: {}", openId, ragTag);
             return Response.<GeneralEmptyResponseDTO>builder()

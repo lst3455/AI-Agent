@@ -23,25 +23,31 @@ public class RagService implements IRagService{
     private PgVectorStore pgVectorStore;
 
     @Override
-    public RList<String> queryRagTags() {
-        return iRagRepository.queryRagTags();
+    public RList<String> queryRagTags(String userId) {
+        return iRagRepository.queryRagTags(userId);
     }
 
     @Override
-    public void fileUpload(String ragTag, List<MultipartFile> files) {
+    public void fileUpload(String userId, String ragTag, List<MultipartFile> files) {
         for (MultipartFile file : files) {
             TikaDocumentReader documentReader = new TikaDocumentReader(file.getResource());
             List<Document> documents = documentReader.get();
             List<Document> documentSplitterList = tokenTextSplitter.apply(documents);
 
-            // Add the RAG tag as metadata to each document and its splits.
-            documents.forEach(doc -> doc.getMetadata().put("context", ragTag));
-            documentSplitterList.forEach(doc -> doc.getMetadata().put("context", ragTag));
+            // Add both userId and ragTag as metadata
+            documents.forEach(doc -> {
+                doc.getMetadata().put("context", ragTag);
+                doc.getMetadata().put("userId", userId);
+            });
+
+            documentSplitterList.forEach(doc -> {
+                doc.getMetadata().put("context", ragTag);
+                doc.getMetadata().put("userId", userId);
+            });
 
             pgVectorStore.accept(documentSplitterList);
 
-            // Add the RAG tag to the list of known tags if it's not already present.
-            RList<String> elements = this.queryRagTags();
+            RList<String> elements = this.queryRagTags(userId);
             if (!elements.contains(ragTag)) {
                 elements.add(ragTag);
             }
@@ -49,9 +55,9 @@ public class RagService implements IRagService{
     }
 
     @Override
-    public void deleteRagContext(String ragTag) {
-        pgVectorStore.delete("context == '" + ragTag + "'");
-        RList<String> elements = this.queryRagTags();
+    public void deleteRagContext(String userId, String ragTag) {
+        pgVectorStore.delete("context == '" + ragTag + "' AND userId == '" + userId + "'");
+        RList<String> elements = this.queryRagTags(userId);
         elements.remove(ragTag);
     }
 }

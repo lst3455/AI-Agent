@@ -31,4 +31,18 @@ public class Constants {
         private String code;  // Unique code representing the response type
         private String info;  // Informational message associated with the response code
     }
+
+    public enum RedisKey {
+        RAG_TAG_KEY("ragTag_");
+
+        private final String key;
+
+        RedisKey(String key) {
+            this.key = key;
+        }
+
+        public String getKey() {
+            return key;
+        }
+    }
 }
