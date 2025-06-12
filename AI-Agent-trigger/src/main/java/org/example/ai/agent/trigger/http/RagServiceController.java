@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.ai.agent.domain.auth.service.IAuthService;
 import org.example.ai.agent.domain.openai.service.IRagService;
 import org.example.ai.agent.trigger.http.dto.GeneralEmptyResponseDTO;
+import org.example.ai.agent.trigger.http.dto.GitRepoUploadRequestDTO;
 import org.example.ai.agent.trigger.http.dto.QueryRagTagsResponseDTO;
 import org.example.ai.agent.types.common.Constants;
 import org.example.ai.agent.types.model.Response;
@@ -76,7 +77,10 @@ public class RagServiceController {
      * @return A Response object indicating the success or failure of the upload operation.
      */
     @RequestMapping(value = "file/upload", method = RequestMethod.POST, headers = "content-type=multipart/form-data")
-    public Response<GeneralEmptyResponseDTO> uploadFile(@RequestHeader("Authorization") String token, @RequestHeader("OpenId") String openId, @RequestParam("ragTag") String ragTag, @RequestParam("file") List<MultipartFile> files) {
+    public Response<GeneralEmptyResponseDTO> uploadFile(@RequestHeader("Authorization") String token,
+                                                        @RequestHeader("OpenId") String openId,
+                                                        @RequestParam("ragTag") String ragTag,
+                                                        @RequestParam("file") List<MultipartFile> files) {
         log.info("context base upload started, openId: {}, RAG tag: {}", openId, ragTag);
         try{
             // 1. Token 校验
@@ -109,6 +113,53 @@ public class RagServiceController {
     }
 
     /**
+     * Handles the uploading of Git repositories to the knowledge base, associating them with a specific RAG tag.
+     * Example URL: http://localhost:8092/api/v0/agent/rag/gitRepo/publicRepo_upload
+     *
+     * @param token The authorization token for authentication
+     * @param openId The user's unique identifier
+     * @param gitRepoUploadRequestDTO DTO containing the RAG tag and Git repository URLs
+     * @return A Response object indicating the success or failure of the upload operation
+     */
+    @RequestMapping(value = "gitRepo/publicRepo_upload", method = RequestMethod.POST)
+    public Response<GeneralEmptyResponseDTO> uploadGitRepo(@RequestHeader("Authorization") String token,
+                                                           @RequestHeader("OpenId") String openId,
+                                                           @RequestBody GitRepoUploadRequestDTO gitRepoUploadRequestDTO) {
+
+        String ragTag = gitRepoUploadRequestDTO.getRagTag();
+        List<String> repoUrls = gitRepoUploadRequestDTO.getGitRepoUrls();
+        log.info("context base upload started, openId: {}, RAG tag: {}, RepoUrls: {}", openId, ragTag, repoUrls);
+        try{
+            // 1. Token 校验
+            boolean success = authService.checkToken(token);
+            if (!success) {
+                return Response.<GeneralEmptyResponseDTO>builder()
+                        .code(Constants.ResponseCode.TOKEN_ERROR.getCode())
+                        .info(Constants.ResponseCode.TOKEN_ERROR.getInfo())
+                        .build();
+            }
+
+            // 2. Token 解析
+            String openid = authService.openid(token);
+            assert null != openid;
+
+            iRagService.gitRepoUpload(openId,ragTag,repoUrls);
+
+            log.info("context base upload completed, openId: {}, RAG tag: {}, RepoUrls: {}", openId, ragTag, repoUrls);
+            return Response.<GeneralEmptyResponseDTO>builder()
+                    .code(Constants.ResponseCode.SUCCESS.getCode())
+                    .info(Constants.ResponseCode.SUCCESS.getInfo())
+                    .build();
+        }catch (Exception e){
+            log.error("context base upload fail, openId: {}, RAG tag: {}, RepoUrls: {}", openId, ragTag, repoUrls, e);
+            return Response.<GeneralEmptyResponseDTO>builder()
+                    .code(Constants.ResponseCode.UN_ERROR.getCode())
+                    .info(Constants.ResponseCode.UN_ERROR.getInfo())
+                    .build();
+        }
+    }
+
+    /**
      * Handles the deleting knowledge base, remove specific RAG tag.
      * Example URL: http://localhost:8092/api/v0/agent/rag/delete_rag
      *
@@ -118,7 +169,9 @@ public class RagServiceController {
      * @return
      */
     @RequestMapping(value = "delete_rag_context", method = RequestMethod.POST)
-    public Response<GeneralEmptyResponseDTO> deleteRagContext(@RequestHeader("Authorization") String token, @RequestHeader("OpenId") String openId, @RequestParam("ragTag") String ragTag) {
+    public Response<GeneralEmptyResponseDTO> deleteRagContext(@RequestHeader("Authorization") String token,
+                                                              @RequestHeader("OpenId") String openId,
+                                                              @RequestParam("ragTag") String ragTag) {
         log.info("Context base delete started, openId: {}, RAG tag: {}", openId, ragTag);
         try{
             // 1. Token 校验
