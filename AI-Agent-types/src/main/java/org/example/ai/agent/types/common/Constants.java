@@ -26,7 +26,8 @@ public class Constants {
         APP_TOKEN_ERROR("0004", "Interface access denied"),
         TOKEN_ERROR("0003", "Permission denied"),
         USER_BANNED("0004","Current user is banned"),
-        QUOTA_OR_MODEL_TYPE_UNSUPPORTED("0005","Quota or model type unavailable for current user");
+        QUOTA_OR_MODEL_TYPE_UNSUPPORTED("0005","Quota or model type unavailable for current user"),
+        REACH_UPLOAD_LIMIT("0006","Context user upload reach limitation");
 
         private String code;  // Unique code representing the response type
         private String info;  // Informational message associated with the response code

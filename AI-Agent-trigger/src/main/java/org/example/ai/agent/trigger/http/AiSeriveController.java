@@ -6,24 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.ai.agent.domain.auth.service.IAuthService;
 import org.example.ai.agent.domain.openai.model.aggregates.ChatProcessAggregate;
 import org.example.ai.agent.domain.openai.service.IChatService;
+import org.example.ai.agent.domain.utils.Utils;
 import org.example.ai.agent.trigger.http.dto.ChatRagRequestDTO;
-import org.example.ai.agent.trigger.http.dto.ChatRequestDTO;
 import org.example.ai.agent.trigger.http.dto.MessageEntity;
 import org.example.ai.agent.types.common.Constants;
-import org.example.ai.agent.types.exception.ChatGPTException;
-import org.springframework.ai.chat.client.ChatClient;
+import org.example.ai.agent.types.exception.AiServiceException;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.chat.prompt.SystemPromptTemplate;
-import org.springframework.ai.document.Document;
-import org.springframework.ai.transformer.splitter.TokenTextSplitter;
-import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.pgvector.PgVectorStore;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
@@ -31,7 +22,6 @@ import jakarta.annotation.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +29,7 @@ import java.util.stream.Collectors;
  * This controller provides endpoints for interacting with an LLM,
  * primarily focusing on generating streaming chat responses.
  */
-@RestController()
+@RestController
 @CrossOrigin("${app.config.cross-origin}")
 @RequestMapping("/api/${app.config.api-version}/agent/ai")
 @Slf4j
@@ -51,18 +41,27 @@ public class AiSeriveController {
     @Resource
     private IChatService chatService;
 
+    /**
+     * Endpoint for generating streaming RAG (Retrieval-Augmented Generation) responses.
+     * Example: POST http://localhost:8090/api/v0/agent/ai/generate_stream_rag
+     *
+     * @param request  ChatRagRequestDTO containing chat messages and model info
+     * @param token    Authorization token
+     * @param response HttpServletResponse for streaming output
+     * @return Flux<String> streaming the generated response
+     */
     @RequestMapping(value = "generate_stream_rag", method = RequestMethod.POST)
-    public Flux<String> generateStreamRag(@RequestBody ChatRagRequestDTO request, @RequestHeader("Authorization") String token, HttpServletResponse response) {
-        log.info("Trigger rag general generate, request:{}", JSON.toJSONString(request));
+    public Flux<String> generateStreamRag(@RequestBody ChatRagRequestDTO request,
+                                          @RequestHeader("Authorization") String token,
+                                          HttpServletResponse response) {
+        log.info("Trigger RAG general generate, request:{}", JSON.toJSONString(request));
         try {
             // Step 1: Configure basic HTTP response properties for streaming.
-            // Sets content type to text/event-stream, UTF-8 character encoding, and disables caching.
             response.setContentType("text/event-stream");
             response.setCharacterEncoding("UTF-8");
             response.setHeader("Cache-Control", "no-cache");
 
             // Step 2: Perform token verification.
-            // Checks if the provided authorization token is valid.
             boolean success = authService.checkToken(token);
             if (!success) {
                 log.warn("Token verification failed for token: {}", token);
@@ -76,17 +75,18 @@ public class AiSeriveController {
             log.info("Processing streaming Q&A request for openid: {} with model: {}", openid, request.getModel());
 
             // Step 4: Convert incoming DTO messages to Spring AI Message objects.
-            // This maps roles (user, system, assistant) to their respective Spring AI message types.
             List<MessageEntity> messageEntities = request.getMessages();
             // Avoid empty messageEntities
-            if (messageEntities.isEmpty()) messageEntities.add(MessageEntity.builder()
-                    .role("user")
-                    .content("Hi")
-                    .build());
+            if (messageEntities.isEmpty()) {
+                messageEntities.add(MessageEntity.builder()
+                        .role("user")
+                        .content("Hi")
+                        .build());
+            }
 
             List<Message> aiMessages = messageEntities.stream()
                     .map(msg -> {
-                        switch (msg.getRole().toLowerCase()) { // Normalize role to lowercase for robust matching
+                        switch (msg.getRole().toLowerCase()) {
                             case "user":
                                 return new UserMessage(msg.getContent());
                             case "system":
@@ -95,13 +95,12 @@ public class AiSeriveController {
                                 return new AssistantMessage(msg.getContent());
                             default:
                                 log.warn("Unknown message role '{}', defaulting to user message.", msg.getRole());
-                                return new UserMessage(msg.getContent()); // Default to UserMessage for unknown roles
+                                return new UserMessage(msg.getContent());
                         }
                     })
                     .collect(Collectors.toList());
 
             // Step 5: Build the ChatProcessAggregate with necessary parameters for the chat service.
-            // This includes the user's OpenID, the requested model, and the converted list of messages.
             ChatProcessAggregate chatProcessAggregate = ChatProcessAggregate.builder()
                     .openid(openid)
                     .model(request.getModel())
@@ -110,19 +109,30 @@ public class AiSeriveController {
                     .build();
 
             // Step 6: Initiate the streaming chat generation through the chat service.
-            // The service will return a Flux<String> emitting parts of the response as they are generated.
             return chatService.generateStreamRag(chatProcessAggregate);
+        } catch (AiServiceException e) {
+            log.error("Ai servie error, request: {} encountered an exception", request, e);
+            return Flux.just(Utils.formatSseMessage("error", e.getCode(), e.getMessage()));
         } catch (Exception e) {
-            log.error("Rag general generate fail, request: {} encountered an exception", request, e);
-            throw new ChatGPTException(e.getMessage());
+            log.error("RAG general generate failed, request: {} encountered an exception", request, e);
+            return Flux.just(Utils.formatSseMessage("error", Constants.ResponseCode.UN_ERROR.getCode(),
+                    Constants.ResponseCode.UN_ERROR.getInfo()));
         }
     }
 
     /**
-     * http://localhost:8090/api/v0/agent/ai/generate_title
+     * Endpoint for generating a title using the chat model.
+     * Example: POST http://localhost:8090/api/v0/agent/ai/generate_title
+     *
+     * @param request  ChatRagRequestDTO containing chat messages and model info
+     * @param token    Authorization token
+     * @param response HttpServletResponse for streaming output
+     * @return Flux<String> streaming the generated title
      */
     @RequestMapping(value = "generate_title", method = RequestMethod.POST)
-    public Flux<String> generateTitle(@RequestBody ChatRagRequestDTO request, @RequestHeader("Authorization") String token, HttpServletResponse response) {
+    public Flux<String> generateTitle(@RequestBody ChatRagRequestDTO request,
+                                      @RequestHeader("Authorization") String token,
+                                      HttpServletResponse response) {
         log.info("Trigger generate title, request:{}", JSON.toJSONString(request));
 
         try {
@@ -144,26 +154,32 @@ public class AiSeriveController {
             String openid = authService.openid(token);
             log.info("Processing streaming title request, openid: {} Request model: {}", openid, request.getModel());
 
-            List<MessageEntity> messageEntities = request.getMessages() != null? request.getMessages() : new ArrayList<>();
+            List<MessageEntity> messageEntities = request.getMessages() != null ? request.getMessages() : new ArrayList<>();
             // Avoid empty messageEntities
-            if (messageEntities.isEmpty()) messageEntities.add(MessageEntity.builder()
-                    .role("user")
-                    .content("Hi")
-                    .build());
+            if (messageEntities.isEmpty()) {
+                messageEntities.add(MessageEntity.builder()
+                        .role("user")
+                        .content("Hi")
+                        .build());
+            }
 
             // 4. Convert DTO messages to Spring AI messages
             List<Message> aiMessages = messageEntities.stream()
                     .map(msg -> {
                         switch (msg.getRole()) {
-                            case "user": return new UserMessage(msg.getContent());
-                            case "system": return new SystemMessage(msg.getContent());
-                            case "assistant": return new AssistantMessage(msg.getContent());
-                            default: return new UserMessage(msg.getContent());
+                            case "user":
+                                return new UserMessage(msg.getContent());
+                            case "system":
+                                return new SystemMessage(msg.getContent());
+                            case "assistant":
+                                return new AssistantMessage(msg.getContent());
+                            default:
+                                return new UserMessage(msg.getContent());
                         }
                     })
                     .collect(Collectors.toList());
 
-            // 4. Build parameters
+            // 5. Build parameters
             ChatProcessAggregate chatProcessAggregate = ChatProcessAggregate.builder()
                     .openid(openid)
                     .model(request.getModel())
@@ -172,9 +188,14 @@ public class AiSeriveController {
 
             // 6. Stream the response - extract just the text content from each ChatResponse
             return chatService.generateTitle(chatProcessAggregate);
+        } catch (AiServiceException e) {
+            log.error("Ai servie error, request: {} encountered an exception", request, e);
+            return Flux.just(Utils.formatSseMessage("error", e.getCode(), e.getMessage()));
         } catch (Exception e) {
-            log.error("Generate title fail, request: {} encountered an exception", request, e);
-            throw new ChatGPTException(e.getMessage());
+            log.error("Generate title failed, request: {} encountered an exception", request, e);
+            return Flux.just(Utils.formatSseMessage("error", Constants.ResponseCode.UN_ERROR.getCode(),
+                    Constants.ResponseCode.UN_ERROR.getInfo()));
         }
     }
+
 }

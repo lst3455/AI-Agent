@@ -3,6 +3,8 @@ package org.example.ai.agent.domain.openai.service;
 import jakarta.annotation.Resource;
 import org.apache.commons.io.FileUtils;
 import org.example.ai.agent.domain.openai.repository.IRagRepository;
+import org.example.ai.agent.types.common.Constants;
+import org.example.ai.agent.types.exception.RagServiceException;
 import org.redisson.api.RList;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
@@ -43,6 +45,12 @@ public class RagService implements IRagService{
 
     @Override
     public void fileUpload(String userId, String ragTag, List<MultipartFile> files) {
+        // user can upload up to 5 context
+        RList<String> elements = this.queryRagTags(userId);
+        if (elements.size() == 5) {
+            throw new RagServiceException(Constants.ResponseCode.REACH_UPLOAD_LIMIT.getCode(),Constants.ResponseCode.REACH_UPLOAD_LIMIT.getInfo());
+        }
+
         for (MultipartFile file : files) {
             TikaDocumentReader documentReader = new TikaDocumentReader(file.getResource());
             List<Document> documents = documentReader.get();
@@ -61,7 +69,6 @@ public class RagService implements IRagService{
 
             pgVectorStore.accept(documentSplitterList);
 
-            RList<String> elements = this.queryRagTags(userId);
             if (!elements.contains(ragTag)) {
                 elements.add(ragTag);
             }
@@ -70,6 +77,11 @@ public class RagService implements IRagService{
 
     @Override
     public void gitRepoUpload(String userId, String ragTag, List<String> repoUrls) throws IOException, GitAPIException {
+        RList<String> elements = this.queryRagTags(userId);
+        if (elements.size() == 5) {
+            throw new RagServiceException(Constants.ResponseCode.REACH_UPLOAD_LIMIT.getCode(),Constants.ResponseCode.REACH_UPLOAD_LIMIT.getInfo());
+        }
+
         String localPath = "./git-cloned-repo";
 
         for (String repoUrl : repoUrls) {
@@ -113,7 +125,6 @@ public class RagService implements IRagService{
 
         FileUtils.deleteDirectory(new File(localPath));
 
-        RList<String> elements = this.queryRagTags(userId);
         if (!elements.contains(ragTag)) {
             elements.add(ragTag);
         }
