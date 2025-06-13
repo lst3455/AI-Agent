@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,7 +36,7 @@ public class SensitiveWordFilter implements ILogicFilter<UserAccountEntity> {
     @Override
     public RuleLogicEntity<ChatProcessAggregate> filter(
             ChatProcessAggregate chatProcess,
-            UserAccountEntity userAccountEntity) throws Exception {
+            UserAccountEntity userAccountEntity) throws ExecutionException {
 
         log.info("rule engine - sensitive - start, chatProcess:{}", JSON.toJSONString(chatProcess));
 

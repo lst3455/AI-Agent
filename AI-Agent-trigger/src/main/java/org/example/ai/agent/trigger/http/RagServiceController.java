@@ -114,6 +114,11 @@ public class RagServiceController {
                     .code(e.getCode())
                     .info(e.getMessage())
                     .build();
+        } catch (IllegalArgumentException e) {
+            log.error("Illegal file size or type, openId: {}, RAG tag: {}", openId, ragTag, e);
+            return Response.<GeneralEmptyResponseDTO>builder()
+                    .info(e.getMessage())
+                    .build();
         } catch (Exception e) {
             log.error("Context base upload failed, openId: {}, RAG tag: {}", openId, ragTag, e);
             return Response.<GeneralEmptyResponseDTO>builder()
@@ -163,7 +168,7 @@ public class RagServiceController {
                     .info(Constants.ResponseCode.SUCCESS.getInfo())
                     .build();
         } catch (GitAPIException e) {
-            log.error("Number of context reached limitation, openId: {}, RAG tag: {}", openId, ragTag, e);
+            log.error("Git API not working or not a public repository, openId: {}, RAG tag: {}", openId, ragTag, e);
             return Response.<GeneralEmptyResponseDTO>builder()
                     .info(e.getMessage())
                     .build();

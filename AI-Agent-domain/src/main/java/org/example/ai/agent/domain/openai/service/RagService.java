@@ -1,11 +1,14 @@
 package org.example.ai.agent.domain.openai.service;
 
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.example.ai.agent.domain.openai.repository.IRagRepository;
 import org.example.ai.agent.types.common.Constants;
 import org.example.ai.agent.types.exception.RagServiceException;
 import org.redisson.api.RList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
@@ -29,7 +32,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 
 @Service
-public class RagService implements IRagService{
+@Slf4j
+public class RagService implements IRagService {
 
     @Resource
     private IRagRepository iRagRepository;
@@ -37,6 +41,9 @@ public class RagService implements IRagService{
     private TokenTextSplitter tokenTextSplitter;
     @Resource
     private PgVectorStore pgVectorStore;
+
+    private static final long MAX_FILE_SIZE = 3L * 1024 * 1024;
+    private static final long MAX_GIT_RESOURCE_SIZE = 300L * 1024;
 
     @Override
     public RList<String> queryRagTags(String userId) {
@@ -48,10 +55,14 @@ public class RagService implements IRagService{
         // user can upload up to 5 context
         RList<String> elements = this.queryRagTags(userId);
         if (elements.size() == 5) {
-            throw new RagServiceException(Constants.ResponseCode.REACH_UPLOAD_LIMIT.getCode(),Constants.ResponseCode.REACH_UPLOAD_LIMIT.getInfo());
+            throw new RagServiceException(Constants.ResponseCode.REACH_UPLOAD_LIMIT.getCode(), Constants.ResponseCode.REACH_UPLOAD_LIMIT.getInfo());
         }
 
         for (MultipartFile file : files) {
+            if (file.getSize() > MAX_FILE_SIZE) {
+                throw new IllegalArgumentException("File " + file.getOriginalFilename() + " exceeds 3 MB");
+            }
+
             TikaDocumentReader documentReader = new TikaDocumentReader(file.getResource());
             List<Document> documents = documentReader.get();
             List<Document> documentSplitterList = tokenTextSplitter.apply(documents);
@@ -79,7 +90,7 @@ public class RagService implements IRagService{
     public void gitRepoUpload(String userId, String ragTag, List<String> repoUrls) throws IOException, GitAPIException {
         RList<String> elements = this.queryRagTags(userId);
         if (elements.size() == 5) {
-            throw new RagServiceException(Constants.ResponseCode.REACH_UPLOAD_LIMIT.getCode(),Constants.ResponseCode.REACH_UPLOAD_LIMIT.getInfo());
+            throw new RagServiceException(Constants.ResponseCode.REACH_UPLOAD_LIMIT.getCode(), Constants.ResponseCode.REACH_UPLOAD_LIMIT.getInfo());
         }
 
         String localPath = "./git-cloned-repo";
@@ -95,7 +106,12 @@ public class RagService implements IRagService{
             // Use Files.walkFileTree to traverse directories
             Files.walkFileTree(Paths.get(localPath), new SimpleFileVisitor<>() {
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (Files.size(file) > MAX_GIT_RESOURCE_SIZE) {
+                        log.warn("File " + file.getFileName() + " exceeds 50 KB, will be skip");
+                        return FileVisitResult.CONTINUE;
+                    }
+
                     TikaDocumentReader reader = new TikaDocumentReader(new PathResource(file));
                     List<Document> documents = reader.get();
                     List<Document> documentSplitterList = tokenTextSplitter.apply(documents);
