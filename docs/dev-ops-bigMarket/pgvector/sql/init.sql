@@ -14,4 +14,4 @@ CREATE TABLE public.vector_store_chatglm_embedding3
 CREATE INDEX idx_vector_store_metadata ON public.vector_store_chatglm_embedding3 USING GIN (metadata);
 
 -- Add a comment to document the expected metadata structure
-COMMENT ON COLUMN public.vector_store_chatglm_embedding3.metadata IS 'JSON metadata containing at minimum: {"userId": "string", "context": "string"}';
+COMMENT ON COLUMN public.vector_store_chatglm_embedding3.metadata IS 'JSON metadata containing: {"source": "file.txt", "userId": "string", "context": "string"}';

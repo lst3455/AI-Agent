@@ -78,6 +78,8 @@ public class RagService implements IRagService {
                 doc.getMetadata().put("userId", userId);
             });
 
+           // Do upsert operation
+            pgVectorStore.delete("context == '" + ragTag + "' AND userId == '" + userId + "'" + " AND source == '" + file.getOriginalFilename() + "'");
             pgVectorStore.accept(documentSplitterList);
 
             if (!elements.contains(ragTag)) {
