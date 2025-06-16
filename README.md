@@ -1,6 +1,6 @@
 # <div align="center">AI-Agent</div>
 
-###  <div align="center">[Try Here](http://linst-yyds.top:3000)</div>
+###  <div align="center">[Try Here](http://chatbot.linst-yyds.top/)</div>
 
 AI-Agent, a core module of the [AI Hub](https://github.com/lst3455/AI-ChatBot) platform, is engineered with a decoupled front-end/back-end architecture, employing Domain-Driven Design (DDD) and a microservices approach to deliver versatile generative AI services through the integration of diverse large language models. The module predominantly utilizes the Spring AI SDK, ensuring smooth and stable content generation. Currently, AI-Agent supports a range of models for its generative capabilities, including the Qwen3 series, Deepseek-R1, Deepseek-v3, and ChatGLM-4-Flash, while utilizing ChatGLM Embedding-3 for effective context splitting. AI-Agent is continuously evolving, with ongoing efforts to incorporate additional models in the future.
 
